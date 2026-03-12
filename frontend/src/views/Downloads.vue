@@ -47,9 +47,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { getDownloadRecords } from '@/api/download'
 import { ElMessage } from 'element-plus'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
+const userInfo = computed(() => userStore.userInfo)
+const userRoleType = computed(() => userInfo.value?.roleType)
 
 const loading = ref(false)
 const records = ref([])
@@ -68,15 +73,42 @@ const pagination = reactive({
 const loadRecords = async () => {
   loading.value = true
   try {
-    const res = await getDownloadRecords({
+    const params = {
       page: pagination.page,
       size: pagination.size,
       userId: searchForm.userId,
       materialId: searchForm.materialId
-    })
-    records.value = res.data.records
+    }
+    
+    console.log('加载下载记录 - 参数:', params)
+    console.log('加载下载记录 - 用户信息:', userInfo.value)
+    console.log('加载下载记录 - 用户ID:', userInfo.value?.id)
+    console.log('加载下载记录 - 用户角色:', userRoleType.value)
+    
+    const res = await getDownloadRecords(params)
+    
+    console.log('加载下载记录 - 响应数据:', res.data)
+    console.log('加载下载记录 - 记录总数:', res.data.total)
+    
+    if (userRoleType.value === 'STUDENT') {
+      console.log('学生角色，过滤记录')
+      console.log('当前用户ID:', userInfo.value?.id)
+      console.log('记录数据:', res.data.records)
+      const currentUserId = Number(userInfo.value?.id)
+      records.value = res.data.records.filter(record => {
+        const recordUserId = Number(record.userId)
+        console.log('比较:', recordUserId, '===', currentUserId, '结果:', recordUserId === currentUserId)
+        return recordUserId === currentUserId
+      })
+      console.log('过滤后的记录数:', records.value.length)
+    } else {
+      console.log('管理员/教师角色，显示所有记录')
+      records.value = res.data.records
+    }
+    
     pagination.total = res.data.total
   } catch (error) {
+    console.error('加载下载记录失败:', error)
     ElMessage.error('加载下载记录失败')
   } finally {
     loading.value = false

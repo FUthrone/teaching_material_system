@@ -65,15 +65,26 @@ public class MaterialController {
                         HttpServletResponse response) {
         String token = request.getHeader("Authorization");
         Long userId = null;
+        
+        System.out.println("=== 下载资料 ===");
+        System.out.println("资料ID: " + id);
+        System.out.println("Authorization Header: " + token);
+        
         if (token != null && token.startsWith("Bearer ")) {
             try {
                 String jwt = token.substring(7);
+                System.out.println("JWT Token: " + jwt);
                 userId = jwtUtil.getUserIdFromToken(jwt);
+                System.out.println("从JWT提取的用户ID: " + userId);
             } catch (Exception e) {
+                System.out.println("JWT解析失败: " + e.getMessage());
             }
         }
         
         String ip = getClientIp(request);
+        System.out.println("下载IP: " + ip);
+        System.out.println("传递给downloadMaterial的userId: " + userId);
+        
         teachingMaterialService.downloadMaterial(id, userId, ip, response);
     }
 

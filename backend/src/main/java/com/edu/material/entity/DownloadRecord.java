@@ -10,8 +10,10 @@ public class DownloadRecord {
     @TableId(type = IdType.AUTO)
     private Long id;
     
+    @TableField("material_id")
     private Long materialId;
     
+    @TableField("user_id")
     private Long userId;
     
     private String downloadIp;

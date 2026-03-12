@@ -25,20 +25,36 @@ request.interceptors.request.use(
 request.interceptors.response.use(
   response => {
     console.log('响应状态:', response.status)
-    console.log('响应数据:', response.data)
+    console.log('响应头:', response.headers)
+    console.log('响应原始数据:', response.data)
+    
+    if (response.config.responseType === 'blob') {
+      console.log('Blob类型响应，直接返回')
+      return response.data
+    }
+    
     const res = response.data
+    
+    console.log('响应code:', res.code)
+    console.log('响应message:', res.message)
+    console.log('响应数据类型:', typeof res.data)
+    
     if (res.code !== 200) {
       console.error('响应错误:', res)
       ElMessage.error(res.message || '请求失败')
       return Promise.reject(new Error(res.message || '请求失败'))
     }
+    
     console.log('响应成功，返回数据:', res.data)
+    console.log('响应成功，返回userInfo:', res.data?.userInfo)
+    console.log('响应成功，返回token:', res.data?.token)
+    
     return res
   },
   error => {
     console.error('响应拦截器错误:', error)
-    console.error('错误状态:', error.response.status)
-    console.error('错误数据:', error.response.data)
+    console.error('错误状态:', error.response?.status)
+    console.error('错误数据:', error.response?.data)
     if (error.response) {
       switch (error.response.status) {
         case 401:

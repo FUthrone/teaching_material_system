@@ -33,8 +33,21 @@ export const deleteMaterial = (id) => {
   })
 }
 
-export const downloadMaterial = (id) => {
-  return `/api/material/download/${id}`
+export const downloadMaterial = (id, fileName) => {
+  return request({
+    url: `/material/download/${id}`,
+    method: 'get',
+    responseType: 'blob'
+  }).then(response => {
+    const url = window.URL.createObjectURL(new Blob([response]))
+    const link = document.createElement('a')
+    link.href = url
+    link.download = fileName
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  })
 }
 
 export const getMaterialsByCategory = (categoryId) => {

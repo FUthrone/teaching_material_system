@@ -127,14 +127,13 @@ const handleReset = () => {
   loadMaterials()
 }
 
-const handleDownload = (row) => {
-  const url = downloadMaterial(row.id)
-  const link = document.createElement('a')
-  link.href = url
-  link.download = row.fileName
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+const handleDownload = async (row) => {
+  try {
+    await downloadMaterial(row.id, row.fileName)
+    ElMessage.success('下载成功')
+  } catch (error) {
+    ElMessage.error('下载失败')
+  }
 }
 
 const handleDelete = async (row) => {

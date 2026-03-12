@@ -144,27 +144,38 @@ onMounted(() => {
 <style scoped>
 .dashboard {
   padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
 }
 
 .stat-card {
   margin-bottom: 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
 }
 
 .stat-content {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  padding: 24px;
 }
 
 .stat-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 8px;
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 28px;
+  font-size: 32px;
 }
 
 .stat-info {
@@ -172,19 +183,44 @@ onMounted(() => {
 }
 
 .stat-value {
-  font-size: 28px;
-  font-weight: bold;
-  color: #303133;
+  font-size: 36px;
+  font-weight: 600;
+  color: #1d1d1f;
   margin-bottom: 5px;
 }
 
 .stat-label {
   font-size: 14px;
-  color: #909399;
+  color: #86868b;
+  margin-bottom: 5px;
 }
 
 .card-header {
-  font-weight: bold;
-  color: #303133;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1d1d1f;
+  padding: 16px 20px;
+}
+
+.el-table {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.el-table th {
+  background: #f5f7fa;
+  color: #1d1d1f;
+  font-weight: 600;
+  padding: 12px 16px;
+}
+
+.el-table td {
+  border-bottom: 1px solid #f0f0f0;
+  padding: 12px 16px;
+}
+
+.el-table tr:hover {
+  background: #fafafa;
 }
 </style>

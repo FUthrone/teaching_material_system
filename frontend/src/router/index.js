@@ -68,6 +68,12 @@ const routes = [
         name: 'Permissions',
         component: () => import('@/views/Permissions.vue'),
         meta: { requiresAuth: true, permission: 'permission:manage' }
+      },
+      {
+        path: '/404',
+        name: 'Error',
+        component: () => import('@/views/Error.vue'),
+        meta: { requiresAuth: false }
       }
     ]
   }
@@ -78,16 +84,46 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const userStore = useUserStore()
   
+  console.log('路由守卫 - 目标路由:', to.path)
+  console.log('路由守卫 - 需要认证:', to.meta.requiresAuth)
+  console.log('路由守卫 - 需要权限:', to.meta.permission)
+  console.log('路由守卫 - 当前用户:', userStore.userInfo)
+  console.log('路由守卫 - 当前token:', userStore.token)
+  
+  // 未登录且需要认证，重定向到登录页
   if (to.meta.requiresAuth && !userStore.token) {
+    console.log('路由守卫 - 未登录，重定向到登录页')
     next('/login')
-  } else if ((to.path === '/login' || to.path === '/register') && userStore.token) {
-    next('/')
-  } else {
-    next()
+    return
   }
+  
+  // 已登录用户访问登录/注册页，重定向到首页
+  if ((to.path === '/login' || to.path === '/register') && userStore.token) {
+    console.log('路由守卫 - 已登录，重定向到首页')
+    next('/')
+    return
+  }
+  
+  // 如果存在token但userInfo为空，先获取用户信息
+  if (userStore.token && !userStore.userInfo) {
+    console.log('路由守卫 - 存在token但userInfo为空，先获取用户信息')
+    try {
+      await userStore.getUserInfo()
+      console.log('路由守卫 - 用户信息获取成功:', userStore.userInfo)
+    } catch (error) {
+      console.error('路由守卫 - 获取用户信息失败:', error)
+      console.log('路由守卫 - 跳转登录页')
+      next('/login')
+      return
+    }
+  }
+  
+  // 通过所有检查，允许访问
+  console.log('路由守卫 - 允许访问')
+  next()
 })
 
 export default router
