@@ -58,10 +58,11 @@ request.interceptors.response.use(
     if (error.response) {
       switch (error.response.status) {
         case 401:
-          ElMessage.error('未授权，请重新登录')
+          console.error('401错误 - JWT过期或无效')
+          ElMessage.error('登录已过期，请重新登录')
           const userStore = useUserStore()
-          userStore.logout()
-          window.location.href = '/login'
+          userStore.clearToken()
+          window.location.href = '/session-expired'
           break
         case 403:
           console.error('403错误详情:', error.response.data)

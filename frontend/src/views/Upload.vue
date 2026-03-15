@@ -133,7 +133,7 @@ const handleSubmit = async () => {
 
     await uploadMaterial(formData)
     ElMessage.success('上传成功')
-    router.push('/materials')
+    router.push('/app/materials')
   } catch (error) {
     ElMessage.error(error.message || '上传失败')
   } finally {

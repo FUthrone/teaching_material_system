@@ -4,7 +4,7 @@
       <template #header>
         <div class="card-header">
           <span>教学资料列表</span>
-          <el-button type="primary" @click="$router.push('/upload')">上传资料</el-button>
+          <el-button type="primary" @click="$router.push('/app/upload')">上传资料</el-button>
         </div>
       </template>
       

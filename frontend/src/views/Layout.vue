@@ -11,35 +11,35 @@
         text-color="#bfcbd9"
         active-text-color="#409EFF"
       >
-        <el-menu-item index="/dashboard">
+        <el-menu-item index="/app/dashboard">
           <el-icon><HomeFilled /></el-icon>
           <span>首页</span>
         </el-menu-item>
-        <el-menu-item index="/materials">
+        <el-menu-item index="/app/materials">
           <el-icon><Document /></el-icon>
           <span>资料列表</span>
         </el-menu-item>
-        <el-menu-item index="/upload">
+        <el-menu-item index="/app/upload">
           <el-icon><Upload /></el-icon>
           <span>资料上传</span>
         </el-menu-item>
-        <el-menu-item index="/categories">
+        <el-menu-item index="/app/categories">
           <el-icon><Folder /></el-icon>
           <span>分类管理</span>
         </el-menu-item>
-        <el-menu-item index="/downloads">
+        <el-menu-item index="/app/downloads">
           <el-icon><Download /></el-icon>
           <span>下载记录</span>
         </el-menu-item>
-        <el-menu-item index="/users" v-if="canAccess('user:manage')">
+        <el-menu-item index="/app/users" v-if="canAccess('user:manage')">
           <el-icon><User /></el-icon>
           <span>用户管理</span>
         </el-menu-item>
-        <el-menu-item index="/roles" v-if="canAccess('role:manage')">
+        <el-menu-item index="/app/roles" v-if="canAccess('role:manage')">
           <el-icon><UserFilled /></el-icon>
           <span>角色管理</span>
         </el-menu-item>
-        <el-menu-item index="/permissions" v-if="canAccess('permission:manage')">
+        <el-menu-item index="/app/permissions" v-if="canAccess('permission:manage')">
           <el-icon><Lock /></el-icon>
           <span>权限管理</span>
         </el-menu-item>
@@ -50,7 +50,7 @@
         <div class="header-content">
           <div class="breadcrumb">
             <el-breadcrumb separator="/">
-              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+              <el-breadcrumb-item :to="{ path: '/app' }">首页</el-breadcrumb-item>
               <el-breadcrumb-item>{{ currentTitle }}</el-breadcrumb-item>
             </el-breadcrumb>
           </div>
@@ -97,14 +97,14 @@ const userInfo = computed(() => {
 const activeMenu = computed(() => route.path)
 const currentTitle = computed(() => {
   const titles = {
-    '/dashboard': '首页',
-    '/materials': '资料列表',
-    '/upload': '资料上传',
-    '/categories': '分类管理',
-    '/downloads': '下载记录',
-    '/users': '用户管理',
-    '/roles': '角色管理',
-    '/permissions': '权限管理'
+    '/app/dashboard': '首页',
+    '/app/materials': '资料列表',
+    '/app/upload': '资料上传',
+    '/app/categories': '分类管理',
+    '/app/downloads': '下载记录',
+    '/app/users': '用户管理',
+    '/app/roles': '角色管理',
+    '/app/permissions': '权限管理'
   }
   return titles[route.path] || '首页'
 })

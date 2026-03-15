@@ -108,8 +108,10 @@ public class TeachingMaterialService extends ServiceImpl<TeachingMaterialMapper,
         }
 
         try {
-            String objectName = material.getFileUrl().substring(material.getFileUrl().lastIndexOf("/") + 1);
-            minioUtil.deleteFile(objectName);
+            String objectName = material.getObjectName();
+            if (objectName != null && !objectName.isEmpty()) {
+                minioUtil.deleteFile(objectName);
+            }
             removeById(materialId);
         } catch (Exception e) {
             throw new RuntimeException("文件删除失败", e);

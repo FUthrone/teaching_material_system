@@ -3,6 +3,10 @@ import { useUserStore } from '@/stores/user'
 
 const routes = [
   {
+    path: '/',
+    redirect: '/login'
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/views/Login.vue'),
@@ -15,10 +19,16 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
-    path: '/',
+    path: '/session-expired',
+    name: 'SessionExpired',
+    component: () => import('@/views/SessionExpired.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/app',
     name: 'Layout',
     component: () => import('@/views/Layout.vue'),
-    redirect: '/dashboard',
+    redirect: '/app/dashboard',
     meta: { requiresAuth: true },
     children: [
       {
@@ -103,7 +113,7 @@ router.beforeEach(async (to, from, next) => {
   // 已登录用户访问登录/注册页，重定向到首页
   if ((to.path === '/login' || to.path === '/register') && userStore.token) {
     console.log('路由守卫 - 已登录，重定向到首页')
-    next('/')
+    next('/app')
     return
   }
   
@@ -115,8 +125,11 @@ router.beforeEach(async (to, from, next) => {
       console.log('路由守卫 - 用户信息获取成功:', userStore.userInfo)
     } catch (error) {
       console.error('路由守卫 - 获取用户信息失败:', error)
-      console.log('路由守卫 - 跳转登录页')
-      next('/login')
+      console.log('路由守卫 - JWT可能已过期，跳转登录过期页面')
+      // 清除token
+      userStore.clearToken()
+      // 跳转到登录过期页面
+      next('/session-expired')
       return
     }
   }
