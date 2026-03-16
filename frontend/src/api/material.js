@@ -15,14 +15,15 @@ export const getMaterial = (id) => {
   })
 }
 
-export const uploadMaterial = (formData) => {
+export const uploadMaterial = (formData, onUploadProgress) => {
   return request({
     url: '/material/upload',
     method: 'post',
     data: formData,
     headers: {
       'Content-Type': 'multipart/form-data'
-    }
+    },
+    onUploadProgress: onUploadProgress
   })
 }
 
@@ -33,11 +34,12 @@ export const deleteMaterial = (id) => {
   })
 }
 
-export const downloadMaterial = (id, fileName) => {
+export const downloadMaterial = (id, fileName, onDownloadProgress) => {
   return request({
     url: `/material/download/${id}`,
     method: 'get',
-    responseType: 'blob'
+    responseType: 'blob',
+    onDownloadProgress: onDownloadProgress
   }).then(response => {
     const url = window.URL.createObjectURL(new Blob([response]))
     const link = document.createElement('a')

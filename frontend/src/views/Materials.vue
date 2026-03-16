@@ -27,6 +27,42 @@
         </el-form-item>
       </el-form>
 
+      <!-- 下载进度对话框 -->
+      <el-dialog
+        v-model="downloading"
+        title="下载进度"
+        width="450px"
+        :close-on-click-modal="false"
+        :close-on-press-escape="false"
+        :show-close="false"
+      >
+        <div class="download-progress">
+          <div class="file-info">
+            <el-icon class="file-icon"><Document /></el-icon>
+            <span class="file-name">{{ currentDownloadFile }}</span>
+          </div>
+          
+          <el-progress 
+            :percentage="downloadProgress" 
+            :stroke-width="20"
+            :text-inside="true"
+          />
+          
+          <div class="progress-details">
+            <div class="detail-item">
+              <span class="detail-label">下载进度:</span>
+              <span class="detail-value">{{ downloadProgress }}%</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">下载速度:</span>
+              <span class="detail-value">{{ downloadSpeed }}</span>
+            </div>
+          </div>
+          
+          <p class="status-text">{{ downloadStatus }}</p>
+        </div>
+      </el-dialog>
+
       <el-table :data="materials" v-loading="loading" style="width: 100%">
         <el-table-column prop="title" label="标题" width="200" />
         <el-table-column prop="description" label="描述" show-overflow-tooltip />
@@ -127,12 +163,57 @@ const handleReset = () => {
   loadMaterials()
 }
 
+const downloadProgress = ref(0)
+const downloadStatus = ref('')
+const downloading = ref(false)
+const currentDownloadFile = ref('')
+const downloadSpeed = ref('0 B/s')
+const downloadStartTime = ref(0)
+const downloadLastLoaded = ref(0)
+
 const handleDownload = async (row) => {
   try {
-    await downloadMaterial(row.id, row.fileName)
+    downloading.value = true
+    downloadProgress.value = 0
+    downloadStatus.value = '准备下载...'
+    currentDownloadFile.value = row.fileName
+    downloadSpeed.value = '0 B/s'
+    downloadStartTime.value = Date.now()
+    downloadLastLoaded.value = 0
+    
+    const totalSize = row.fileSize || 0
+    
+    await downloadMaterial(row.id, row.fileName, (progressEvent) => {
+      const loaded = progressEvent.loaded || 0
+      const total = progressEvent.total || totalSize
+      
+      let percentCompleted = 0
+      if (total > 0) {
+        percentCompleted = Math.round((loaded * 100) / total)
+      }
+      
+      downloadProgress.value = percentCompleted
+      
+      const currentTime = Date.now()
+      const timeDiff = (currentTime - downloadStartTime.value) / 1000
+      const loadedDiff = loaded - downloadLastLoaded.value
+      
+      if (timeDiff > 0 && loadedDiff > 0) {
+        const speed = loadedDiff / timeDiff
+        downloadSpeed.value = formatFileSize(speed) + '/s'
+      }
+      
+      downloadLastLoaded.value = loaded
+      downloadStartTime.value = currentTime
+      
+      downloadStatus.value = `已下载 ${formatFileSize(loaded)} / ${formatFileSize(total)}`
+    })
+    
     ElMessage.success('下载成功')
   } catch (error) {
     ElMessage.error('下载失败')
+  } finally {
+    downloading.value = false
   }
 }
 
@@ -186,5 +267,65 @@ onMounted(() => {
 
 .search-form {
   margin-bottom: 20px;
+}
+
+.download-progress {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.download-progress .file-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 25px;
+}
+
+.download-progress .file-icon {
+  font-size: 24px;
+  color: #667eea;
+  margin-right: 10px;
+}
+
+.download-progress .file-name {
+  font-weight: bold;
+  font-size: 16px;
+  word-break: break-all;
+  color: #303133;
+}
+
+.download-progress .progress-details {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+
+.download-progress .detail-item {
+  text-align: center;
+}
+
+.download-progress .detail-label {
+  display: block;
+  font-size: 14px;
+  color: #909399;
+  margin-bottom: 8px;
+}
+
+.download-progress .detail-value {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  color: #303133;
+}
+
+.download-progress .status-text {
+  margin-top: 15px;
+  color: #909399;
+  font-size: 14px;
+}
+
+:deep(.el-progress-bar__inner) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 }
 </style>

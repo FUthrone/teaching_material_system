@@ -28,11 +28,19 @@ public class MinioUtil {
 
     @PostConstruct
     public void init() {
-        minioClient = MinioClient.builder()
-                .endpoint(endpoint)
-                .credentials(accessKey, secretKey)
-                .build();
-        createBucket();
+        try {
+            minioClient = MinioClient.builder()
+                    .endpoint(endpoint)
+                    .credentials(accessKey, secretKey)
+                    .build();
+            createBucket();
+            System.out.println("MinIO初始化成功");
+        } catch (Exception e) {
+            System.err.println("MinIO初始化失败: " + e.getMessage());
+            System.err.println("请确保MinIO服务正在运行，或检查配置是否正确");
+            System.err.println("MinIO配置: endpoint=" + endpoint + ", bucketName=" + bucketName);
+            // 不抛出异常，让应用继续启动
+        }
     }
 
     public void createBucket() {
@@ -46,6 +54,7 @@ public class MinioUtil {
                         .build());
             }
         } catch (Exception e) {
+            System.err.println("创建MinIO桶失败: " + e.getMessage());
             throw new RuntimeException("创建MinIO桶失败", e);
         }
     }
