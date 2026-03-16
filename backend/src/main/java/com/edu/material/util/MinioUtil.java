@@ -60,8 +60,7 @@ public class MinioUtil {
     }
 
     public String uploadFile(String objectName, MultipartFile file) {
-        try {
-            InputStream inputStream = file.getInputStream();
+        try (InputStream inputStream = file.getInputStream()) {
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucketName)
                     .object(sanitizeObjectName(objectName))

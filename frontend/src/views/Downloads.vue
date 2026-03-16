@@ -22,8 +22,9 @@
 
       <el-table :data="records" v-loading="loading" style="width: 100%">
         <el-table-column prop="id" label="记录ID" width="80" />
-        <el-table-column prop="materialId" label="资料ID" width="100" />
-        <el-table-column prop="userId" label="用户ID" width="100" />
+        <el-table-column prop="materialTitle" label="资料标题" width="200" show-overflow-tooltip />
+        <el-table-column prop="username" label="用户名" width="120" />
+        <el-table-column prop="realName" label="真实姓名" width="120" />
         <el-table-column prop="downloadIp" label="下载IP" width="150" />
         <el-table-column prop="createTime" label="下载时间" width="180">
           <template #default="{ row }">

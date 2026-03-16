@@ -98,7 +98,7 @@ import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { uploadMaterial } from '@/api/material'
 import { getCategoryTree } from '@/api/category'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const router = useRouter()
 
@@ -208,11 +208,12 @@ const handleSubmit = async () => {
     
     uploadProgress.value = 100
     uploadStatus.value = '上传完成！'
+    
     ElMessage.success('上传成功')
     
     setTimeout(() => {
       router.push('/app/materials')
-    }, 1500)
+    }, 1000)
   } catch (error) {
     uploadProgress.value = 0
     uploadStatus.value = ''

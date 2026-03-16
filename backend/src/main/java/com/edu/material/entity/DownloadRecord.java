@@ -16,6 +16,12 @@ public class DownloadRecord {
     @TableField("user_id")
     private Long userId;
     
+    private String username;
+    
+    private String realName;
+    
+    private String materialTitle;
+    
     private String downloadIp;
     
     @TableField(fill = FieldFill.INSERT)
