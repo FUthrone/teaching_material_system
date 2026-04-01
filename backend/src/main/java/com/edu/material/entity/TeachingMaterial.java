@@ -30,6 +30,8 @@ public class TeachingMaterial {
     
     private String aiCategory;
     
+    private Integer isPrivate;
+    
     @TableField(fill = FieldFill.INSERT)
     private LocalDateTime createTime;
     

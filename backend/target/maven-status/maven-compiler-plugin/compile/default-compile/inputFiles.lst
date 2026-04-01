@@ -1,4 +1,5 @@
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\mapper\SysUserMapper.java
+D:\Desktop\coding\A\backend\src\main\java\com\edu\material\service\SharedMaterialService.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\mapper\MaterialCategoryMapper.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\service\SysRoleService.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\util\PasswordEncoderUtil.java
@@ -12,13 +13,16 @@ D:\Desktop\coding\A\backend\src\main\java\com\edu\material\controller\DownloadCo
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\entity\SysUserRole.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\entity\SysRolePermission.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\controller\AuthController.java
+D:\Desktop\coding\A\backend\src\main\java\com\edu\material\config\MyMetaObjectHandler.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\entity\DownloadRecord.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\util\JwtUtil.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\util\MinioUtil.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\dto\LoginRequest.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\controller\PermissionController.java
+D:\Desktop\coding\A\backend\src\main\java\com\edu\material\entity\SharedMaterial.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\service\DownloadRecordService.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\common\Result.java
+D:\Desktop\coding\A\backend\src\main\java\com\edu\material\controller\SharedMaterialController.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\entity\SysRole.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\mapper\SysRolePermissionMapper.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\mapper\SysPermissionMapper.java
@@ -38,6 +42,7 @@ D:\Desktop\coding\A\backend\src\main\java\com\edu\material\TeachingMaterialAppli
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\mapper\SysRoleMapper.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\mapper\DownloadRecordMapper.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\vo\LoginResponse.java
+D:\Desktop\coding\A\backend\src\main\java\com\edu\material\mapper\SharedMaterialMapper.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\entity\SysUser.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\config\MybatisPlusConfig.java
 D:\Desktop\coding\A\backend\src\main\java\com\edu\material\controller\UserController.java

@@ -104,6 +104,23 @@ CREATE TABLE IF NOT EXISTS download_record (
     INDEX idx_create_time (create_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='下载记录表';
 
+CREATE TABLE IF NOT EXISTS shared_material (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    material_id BIGINT NOT NULL COMMENT '资料ID',
+    share_code VARCHAR(32) UNIQUE NOT NULL COMMENT '分享码',
+    share_password VARCHAR(20) COMMENT '访问密码（可选）',
+    creator_id BIGINT NOT NULL COMMENT '创建者ID',
+    expire_time DATETIME COMMENT '过期时间',
+    max_downloads INT DEFAULT -1 COMMENT '最大下载次数，-1表示无限制',
+    current_downloads INT DEFAULT 0 COMMENT '当前下载次数',
+    status TINYINT DEFAULT 1 COMMENT '状态：1-有效 0-失效',
+    create_time DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    deleted INT DEFAULT 0 COMMENT '逻辑删除：0-未删除 1-已删除',
+    INDEX idx_share_code (share_code),
+    INDEX idx_material_id (material_id),
+    INDEX idx_creator_id (creator_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='分享记录表';
+
 INSERT INTO sys_role (role_name, role_code, description) VALUES
 ('管理员', 'ADMIN', '系统管理员'),
 ('教师', 'TEACHER', '教师角色'),

@@ -63,6 +63,71 @@
         </div>
       </el-dialog>
 
+      <el-dialog
+        v-model="shareDialogVisible"
+        title="创建分享链接"
+        width="500px"
+      >
+        <el-form :model="shareForm" label-width="100px">
+          <el-form-item label="资料名称">
+            <el-input v-model="currentShareMaterial.title" disabled />
+          </el-form-item>
+          
+          <el-form-item label="访问密码">
+            <el-switch v-model="shareForm.needPassword" />
+            <el-input
+              v-if="shareForm.needPassword"
+              v-model="shareForm.password"
+              placeholder="请输入访问密码"
+              style="width: 200px; margin-left: 10px"
+            />
+          </el-form-item>
+          
+          <el-form-item label="有效期">
+            <el-select v-model="shareForm.expireDays" placeholder="请选择有效期">
+              <el-option label="1天" :value="1" />
+              <el-option label="7天" :value="7" />
+              <el-option label="30天" :value="30" />
+              <el-option label="永久有效" :value="-1" />
+            </el-select>
+          </el-form-item>
+          
+          <el-form-item label="下载限制">
+            <el-input-number
+              v-model="shareForm.maxDownloads"
+              :min="-1"
+              :max="10000"
+            />
+            <span style="margin-left: 10px; color: #909399; font-size: 12px">
+              -1表示无限制
+            </span>
+          </el-form-item>
+        </el-form>
+
+        <div v-if="shareLink" style="margin-top: 20px">
+          <el-divider />
+          <el-form-item label="分享链接">
+            <el-input v-model="shareLink" readonly>
+              <template #append>
+                <el-button @click="copyShareLink">复制链接</el-button>
+              </template>
+            </el-input>
+          </el-form-item>
+          <div v-if="shareForm.needPassword" style="margin-left: 100px; color: #909399; font-size: 12px">
+            访问密码: {{ shareForm.password }}
+          </div>
+        </div>
+
+        <template #footer>
+          <span class="dialog-footer">
+            <el-button @click="shareDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="createShareLink" :loading="shareLoading">
+              创建分享
+            </el-button>
+          </span>
+        </template>
+      </el-dialog>
+
       <el-table :data="materials" v-loading="loading" style="width: 100%">
         <el-table-column prop="title" label="标题" width="200" />
         <el-table-column prop="description" label="描述" show-overflow-tooltip />
@@ -78,9 +143,10 @@
             {{ formatDate(row.createTime) }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" fixed="right">
+        <el-table-column label="操作" width="250" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" link @click="handleDownload(row)">下载</el-button>
+            <el-button type="success" link @click="handleShare(row)">分享</el-button>
             <el-button type="danger" link @click="handleDelete(row)" v-if="canDelete(row)">删除</el-button>
           </template>
         </el-table-column>
@@ -104,6 +170,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { getMaterials, downloadMaterial, deleteMaterial } from '@/api/material'
 import { getCategoryTree } from '@/api/category'
+import { createShare } from '@/api/share'
 import { useUserStore } from '@/stores/user'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -230,6 +297,57 @@ const handleDelete = async (row) => {
       ElMessage.error('删除失败')
     }
   }
+}
+
+const shareDialogVisible = ref(false)
+const shareLoading = ref(false)
+const shareLink = ref('')
+const currentShareMaterial = ref({})
+const shareForm = reactive({
+  needPassword: false,
+  password: '',
+  expireDays: 7,
+  maxDownloads: -1
+})
+
+const handleShare = (row) => {
+  currentShareMaterial.value = row
+  shareForm.needPassword = false
+  shareForm.password = ''
+  shareForm.expireDays = 7
+  shareForm.maxDownloads = -1
+  shareLink.value = ''
+  shareDialogVisible.value = true
+}
+
+const createShareLink = async () => {
+  shareLoading.value = true
+  try {
+    const password = shareForm.needPassword ? shareForm.password : null
+    const res = await createShare(
+      currentShareMaterial.value.id,
+      password,
+      shareForm.expireDays,
+      shareForm.maxDownloads
+    )
+    
+    const baseUrl = window.location.origin
+    shareLink.value = `${baseUrl}/share/${res.data.shareCode}`
+    
+    ElMessage.success('分享链接创建成功')
+  } catch (error) {
+    ElMessage.error(error.message || '创建分享链接失败')
+  } finally {
+    shareLoading.value = false
+  }
+}
+
+const copyShareLink = () => {
+  navigator.clipboard.writeText(shareLink.value).then(() => {
+    ElMessage.success('链接已复制到剪贴板')
+  }).catch(() => {
+    ElMessage.error('复制失败，请手动复制')
+  })
 }
 
 const canDelete = (row) => {

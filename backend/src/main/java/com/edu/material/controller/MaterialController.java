@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.edu.material.common.Result;
 import com.edu.material.entity.TeachingMaterial;
 import com.edu.material.service.TeachingMaterialService;
+import com.edu.material.service.AIClassificationService;
 import com.edu.material.util.JwtUtil;
+import com.edu.material.util.FileContentExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,12 +25,28 @@ public class MaterialController {
     @Autowired
     private JwtUtil jwtUtil;
 
+    @Autowired
+    private AIClassificationService aiClassificationService;
+
     @GetMapping("/list")
     public Result<Page<TeachingMaterial>> list(@RequestParam(defaultValue = "1") int page,
                                                 @RequestParam(defaultValue = "10") int size,
                                                 @RequestParam(required = false) Long categoryId,
                                                 @RequestParam(required = false) String keyword) {
         return Result.success(teachingMaterialService.getMaterialsPage(page, size, categoryId, keyword));
+    }
+
+    @GetMapping("/personal")
+    public Result<Page<TeachingMaterial>> personalFiles(@RequestParam(defaultValue = "1") int page,
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestHeader("Authorization") String token) {
+        try {
+            String jwt = token.substring(7);
+            Long userId = jwtUtil.getUserIdFromToken(jwt);
+            return Result.success(teachingMaterialService.getPersonalFilesPage(page, size, userId));
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
     }
 
     @GetMapping("/{id}")
@@ -39,8 +57,10 @@ public class MaterialController {
     @PostMapping("/upload")
     public Result<TeachingMaterial> upload(@RequestParam("title") String title,
                                            @RequestParam("description") String description,
-                                           @RequestParam("categoryId") Long categoryId,
+                                           @RequestParam(value = "categoryId", required = false) Long categoryId,
                                            @RequestParam("file") MultipartFile file,
+                                           @RequestParam(value = "isPrivate", defaultValue = "0") Integer isPrivate,
+                                           @RequestParam(value = "enableAiClassify", defaultValue = "false") Boolean enableAiClassify,
                                            @RequestHeader("Authorization") String token) {
         try {
             String jwt = token.substring(7);
@@ -49,8 +69,19 @@ public class MaterialController {
             TeachingMaterial material = new TeachingMaterial();
             material.setTitle(title);
             material.setDescription(description);
-            material.setCategoryId(categoryId);
             material.setUploadUser(userId);
+            material.setIsPrivate(isPrivate);
+            
+            if (enableAiClassify) {
+                String content = FileContentExtractor.extractContent(file);
+                Long aiCategoryId = aiClassificationService.classifyByContent(file.getOriginalFilename(), content);
+                material.setCategoryId(aiCategoryId);
+            } else {
+                if (categoryId == null) {
+                    return Result.error("请选择分类或启用智能分类");
+                }
+                material.setCategoryId(categoryId);
+            }
             
             TeachingMaterial result = teachingMaterialService.uploadMaterial(material, file);
             return Result.success(result);

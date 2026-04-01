@@ -29,17 +29,30 @@ public class TeachingMaterialService extends ServiceImpl<TeachingMaterialMapper,
         Page<TeachingMaterial> pageParam = new Page<>(page, size);
         LambdaQueryWrapper<TeachingMaterial> wrapper = new LambdaQueryWrapper<>();
         
+        wrapper.eq(TeachingMaterial::getIsPrivate, 0);
+        
         if (categoryId != null) {
             wrapper.eq(TeachingMaterial::getCategoryId, categoryId);
         }
         
         if (keyword != null && !keyword.isEmpty()) {
-            wrapper.like(TeachingMaterial::getTitle, keyword)
-                   .or()
-                   .like(TeachingMaterial::getDescription, keyword);
+            wrapper.and(w -> w.like(TeachingMaterial::getTitle, keyword)
+                             .or()
+                             .like(TeachingMaterial::getDescription, keyword));
         }
         
         wrapper.orderByDesc(TeachingMaterial::getCreateTime);
+        return page(pageParam, wrapper);
+    }
+
+    public Page<TeachingMaterial> getPersonalFilesPage(int page, int size, Long userId) {
+        Page<TeachingMaterial> pageParam = new Page<>(page, size);
+        LambdaQueryWrapper<TeachingMaterial> wrapper = new LambdaQueryWrapper<>();
+        
+        wrapper.eq(TeachingMaterial::getUploadUser, userId);
+        wrapper.eq(TeachingMaterial::getIsPrivate, 1);
+        wrapper.orderByDesc(TeachingMaterial::getCreateTime);
+        
         return page(pageParam, wrapper);
     }
 
@@ -83,7 +96,8 @@ public class TeachingMaterialService extends ServiceImpl<TeachingMaterialMapper,
             InputStream inputStream = minioUtil.downloadFile(objectName);
             
             response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + material.getFileName() + "\"");
+            String encodedFileName = URLEncoder.encode(material.getFileName(), "UTF-8").replaceAll("\\+", "%20");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + encodedFileName + "\"; filename*=UTF-8''" + encodedFileName);
             
             byte[] buffer = new byte[1024];
             int bytesRead;

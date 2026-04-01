@@ -19,7 +19,17 @@
             placeholder="请输入资料描述"
           />
         </el-form-item>
-        <el-form-item label="资料分类" prop="categoryId">
+        <el-form-item label="智能分类">
+          <el-switch 
+            v-model="uploadForm.enableAiClassify" 
+            active-text="启用"
+            inactive-text="禁用"
+          />
+          <el-tooltip content="AI将根据文件名和内容自动推荐最合适的分类" placement="right">
+            <el-icon style="margin-left: 10px; color: #409EFF; cursor: help;"><QuestionFilled /></el-icon>
+          </el-tooltip>
+        </el-form-item>
+        <el-form-item label="资料分类" prop="categoryId" v-if="!uploadForm.enableAiClassify">
           <el-cascader
             v-model="uploadForm.categoryId"
             :options="categoryOptions"
@@ -27,6 +37,16 @@
             placeholder="请选择分类"
             style="width: 100%"
           />
+        </el-form-item>
+        <el-form-item label="文件类型">
+          <el-radio-group v-model="uploadForm.isPrivate">
+            <el-radio :label="0">公开文件</el-radio>
+            <el-radio :label="1">个人文件</el-radio>
+          </el-radio-group>
+          <div style="color: #909399; font-size: 12px; margin-top: 5px">
+            公开文件：所有用户可见可下载<br/>
+            个人文件：仅自己可见，可通过分享链接分享给他人
+          </div>
         </el-form-item>
         <el-form-item label="上传文件" prop="file">
           <el-upload
@@ -118,6 +138,8 @@ const uploadForm = reactive({
   title: '',
   description: '',
   categoryId: null,
+  isPrivate: 0,
+  enableAiClassify: false,
   file: null
 })
 
@@ -129,7 +151,17 @@ const rules = {
     { required: true, message: '请输入资料描述', trigger: 'blur' }
   ],
   categoryId: [
-    { required: true, message: '请选择资料分类', trigger: 'change' }
+    { 
+      required: false,
+      validator: (rule, value, callback) => {
+        if (!uploadForm.enableAiClassify && !value) {
+          callback(new Error('请选择资料分类或启用智能分类'))
+        } else {
+          callback()
+        }
+      },
+      trigger: 'change'
+    }
   ],
   file: [
     { required: true, message: '请上传文件', trigger: 'change' }
@@ -183,7 +215,11 @@ const handleSubmit = async () => {
     const formData = new FormData()
     formData.append('title', uploadForm.title)
     formData.append('description', uploadForm.description)
-    formData.append('categoryId', uploadForm.categoryId)
+    if (!uploadForm.enableAiClassify && uploadForm.categoryId) {
+      formData.append('categoryId', uploadForm.categoryId)
+    }
+    formData.append('isPrivate', uploadForm.isPrivate)
+    formData.append('enableAiClassify', uploadForm.enableAiClassify)
     formData.append('file', uploadForm.file)
 
     await uploadMaterial(formData, (progressEvent) => {

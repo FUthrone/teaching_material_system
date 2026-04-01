@@ -25,6 +25,12 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: '/share/:code',
+    name: 'ShareAccess',
+    component: () => import('@/views/ShareAccess.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
     path: '/app',
     name: 'Layout',
     component: () => import('@/views/Layout.vue'),
@@ -41,6 +47,12 @@ const routes = [
         path: 'materials',
         name: 'Materials',
         component: () => import('@/views/Materials.vue'),
+        meta: { requiresAuth: true }
+      },
+      {
+        path: 'personal-files',
+        name: 'PersonalFiles',
+        component: () => import('@/views/PersonalFiles.vue'),
         meta: { requiresAuth: true }
       },
       {

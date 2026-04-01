@@ -39,6 +39,14 @@ minio:
   secretKey: minioadmin
   bucketName: teaching-material
 
+ai:
+  enabled: true
+  provider: aliyun
+  aliyun:
+    api-key: sk-685e1db2008f499cbcc154175b37fd8d
+    model: qwen-plus
+
+
 logging:
   level:
     com.edu.material: debug

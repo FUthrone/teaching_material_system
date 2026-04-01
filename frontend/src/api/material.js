@@ -8,6 +8,14 @@ export const getMaterials = (params) => {
   })
 }
 
+export const getPersonalFiles = (params) => {
+  return request({
+    url: '/material/personal',
+    method: 'get',
+    params
+  })
+}
+
 export const getMaterial = (id) => {
   return request({
     url: `/material/${id}`,

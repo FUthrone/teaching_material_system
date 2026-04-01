@@ -19,6 +19,10 @@
           <el-icon><Document /></el-icon>
           <span>资料列表</span>
         </el-menu-item>
+        <el-menu-item index="/app/personal-files">
+          <el-icon><FolderOpened /></el-icon>
+          <span>个人文件</span>
+        </el-menu-item>
         <el-menu-item index="/app/upload">
           <el-icon><Upload /></el-icon>
           <span>资料上传</span>
